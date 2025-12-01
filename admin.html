@@ -1,0 +1,2769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Bollyfit Antwerp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e63946;
+            --secondary: #f1faee;
+            --accent: #a8dadc;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --text: #333333;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Authentication Modal */
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            padding: 20px;
+        }
+
+        .auth-modal {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-modal h2 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .auth-modal p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .auth-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .auth-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .auth-form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .auth-form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        .auth-error {
+            color: var(--primary);
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: #c1121f;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: var(--dark);
+            color: white;
+            padding: 15px 20px;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1001;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-header-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .mobile-header-title span {
+            color: var(--primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header span {
+            color: var(--primary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .menu-item span {
+            font-size: 0.9rem;
+        }
+
+        /* Logout Button in Sidebar */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+
+        .logout-menu-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            color: #ff6b6b;
+        }
+
+        .logout-menu-item:hover {
+            background: rgba(255, 107, 107, 0.1);
+            border-left-color: #ff6b6b;
+        }
+
+        .logout-menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .logout-menu-item span {
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: white;
+            padding: 0 30px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-icon.students { background: var(--primary); }
+        .card-icon.classes { background: #28a745; }
+        .card-icon.income { background: #ffc107; }
+        .card-icon.bookings { background: #17a2b8; }
+        .card-icon.notifications { background: #6f42c1; }
+
+        .card h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Admin Sections */
+        .admin-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #c1121f;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--dark);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .edit-btn {
+            background: #ffc107;
+            color: black;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            flex-wrap: wrap;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            text-align: center;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .gallery-section-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-bottom: 8px;
+        }
+
+        .gallery-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .gallery-alt {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        /* Gallery Filters */
+        .gallery-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f1f1f1;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: #e1e1e1;
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+            }
+            
+            .main-content {
+                margin-left: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .sidebar {
+                width: 280px;
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                margin-top: 60px;
+            }
+            
+            .header {
+                display: none;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .card h3 {
+                font-size: 1.8rem;
+            }
+            
+            .admin-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .form-actions {
+                justify-content: stretch;
+            }
+            
+            .form-actions button {
+                flex: 1;
+            }
+            
+            th, td {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .action-btns {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .gallery-item img {
+                height: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-modal {
+                padding: 25px 20px;
+            }
+            
+            .auth-modal h2 {
+                font-size: 1.3rem;
+            }
+            
+            .content {
+                padding: 15px 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .card-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .card h3 {
+                font-size: 1.6rem;
+            }
+            
+            .admin-section {
+                padding: 15px;
+            }
+            
+            .modal {
+                padding: 20px 15px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+            
+            .gallery-item img {
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mobile-header {
+                padding: 12px 15px;
+            }
+            
+            .mobile-header-title {
+                font-size: 1.1rem;
+            }
+            
+            .content {
+                padding: 10px 8px;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            .admin-section {
+                padding: 12px;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div class="auth-modal-overlay" id="authModal">
+        <div class="auth-modal">
+            <h2>Admin Access</h2>
+            <p>Enter password to access the admin panel</p>
+            <form id="authForm">
+                <div class="auth-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="auth-form-control" placeholder="Enter password" required>
+                </div>
+                <div class="auth-error" id="authError">
+                    Invalid password
+                </div>
+                <button type="submit" class="auth-btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-header-title">
+            Bollyfit <span>Admin</span>
+        </div>
+        <div class="admin-avatar">NM</div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Admin Panel (Hidden until authenticated) -->
+    <div class="admin-container" id="adminPanel" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Bollyfit <span>Admin</span></h2>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </div>
+                <div class="menu-item" data-section="classes">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Classes</span>
+                </div>
+                <div class="menu-item" data-section="schedule">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </div>
+                <div class="menu-item" data-section="pricing">
+                    <i class="fas fa-tags"></i>
+                    <span>Pricing</span>
+                </div>
+                <div class="menu-item" data-section="gallery">
+                    <i class="fas fa-images"></i>
+                    <span>Gallery</span>
+                </div>
+                <div class="menu-item" data-section="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                    <div class="notification-badge" id="sidebarNotificationBadge">0</div>
+                </div>
+                <div class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="menu-item" data-section="">
+                    <i class="fas fa-home"></i>
+                    <a href="index.html" style="text-decoration: none; color: #eee;"><span>Home</span></a>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="logout-menu-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Desktop Header -->
+            <div class="header">
+                <div class="header-left">
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                    <div class="admin-avatar">NM</div>
+                    <span>Nikita Mittal</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div class="admin-section active" id="dashboard">
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 id="totalStudents">0</h3>
+                                <div class="card-icon students">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <p>Total Students</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 id="totalClasses">0</h3>
+                                <div class="card-icon classes">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                            </div>
+                            <p>Active Classes</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 id="totalIncome">€0</h3>
+                                <div class="card-icon income">
+                                    <i class="fas fa-euro-sign"></i>
+                                </div>
+                            </div>
+                            <p>Monthly Income</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 id="totalBookings">0</h3>
+                                <div class="card-icon bookings">
+                                    <i class="far fa-calendar-check"></i>
+                                </div>
+                            </div>
+                            <p>New Bookings</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 id="totalNotifications">0</h3>
+                                <div class="card-icon notifications">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                            </div>
+                            <p>Active Notifications</p>
+                        </div>
+                    </div>
+
+                    <div class="recent-activities">
+                        <div class="section-header">
+                            <h2>Recent Activities</h2>
+                        </div>
+                        <div class="table-container">
+                            <table id="activitiesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Activity</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Activities will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Section -->
+                <div class="admin-section" id="users">
+                    <div class="section-header">
+                        <h2>Manage Users</h2>
+                        <button class="btn" onclick="openUserModal()">Add New User</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Interest</th>
+                                    <th>Registration Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Users will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Classes Section -->
+                <div class="admin-section" id="classes">
+                    <div class="section-header">
+                        <h2>Manage Classes</h2>
+                        <button class="btn" onclick="openClassModal()">Add New Class</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="classesTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Level</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Classes will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Schedule Section -->
+                <div class="admin-section" id="schedule">
+                    <div class="section-header">
+                        <h2>Manage Schedule</h2>
+                        <button class="btn" onclick="openScheduleModal()">Add Schedule</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="scheduleTable">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Days</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Schedule will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="admin-section" id="pricing">
+                    <div class="section-header">
+                        <h2>Manage Pricing</h2>
+                        <button class="btn" onclick="openPricingModal()">Add Pricing Plan</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="pricingTable">
+                            <thead>
+                                <tr>
+                                    <th>Plan Name</th>
+                                    <th>Price</th>
+                                    <th>Popular</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Pricing will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Gallery Section -->
+                <div class="admin-section" id="gallery">
+                    <div class="section-header">
+                        <h2>Manage Gallery</h2>
+                        <button class="btn" onclick="openGalleryModal()">Add Image</button>
+                    </div>
+                    
+                    <!-- Gallery Filters -->
+                    <div class="gallery-filters">
+                        <button class="filter-btn active" data-section="all">All Images</button>
+                        <button class="filter-btn" data-section="hero">Hero Section</button>
+                        <button class="filter-btn" data-section="about">About Section</button>
+                        <button class="filter-btn" data-section="classes">Classes Section</button>
+                        <button class="filter-btn" data-section="social">Social Gallery</button>
+                        <button class="filter-btn" data-section="events">Events</button>
+                    </div>
+                    
+                    <div class="gallery-grid" id="adminGalleryGrid">
+                        <!-- Gallery images will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Testimonials Section -->
+                <div class="admin-section" id="testimonials">
+                    <div class="section-header">
+                        <h2>Manage Testimonials</h2>
+                        <button class="btn" onclick="openTestimonialModal()">Add Testimonial</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="testimonialsTable">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Testimonial</th>
+                                    <th>Rating</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Testimonials will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="admin-section" id="notifications">
+                    <div class="section-header">
+                        <h2>Manage Notifications</h2>
+                        <button class="btn" onclick="openNotificationModal()">Add Notification</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="notificationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Message</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Notifications will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div class="admin-section" id="settings">
+                    <div class="section-header">
+                        <h2>Website Settings</h2>
+                    </div>
+                    <form id="settingsForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="studioName">Studio Name</label>
+                                <input type="text" id="studioName" class="form-control" value="Bollyfit Antwerp">
+                            </div>
+                            <div class="form-group">
+                                <label for="instructorName">Instructor Name</label>
+                                <input type="text" id="instructorName" class="form-control" value="Nikita Mittal">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" id="phone" class="form-control" value="+0467693968">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" class="form-control" value="bollyfitantwerp@gmail.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" id="address" class="form-control" value="Antwerp, Belgium">
+                            </div>
+                            <div class="form-group">
+                                <label for="hours">Opening Hours</label>
+                                <textarea id="hours" class="form-control">Monday - Friday: 9am - 9pm&#10;Saturday: 10am - 4pm</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="aboutText">About Text</label>
+                                <textarea id="aboutText" class="form-control">Bollyfit Antwerp brings the vibrant energy of Bollywood dance to Belgium. Founded by Nikita Mittal, our studio offers professional dance instruction that combines traditional Indian dance forms with contemporary fitness techniques.</textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" onclick="resetSettings()">Reset</button>
+                            <button type="submit" class="btn">Save Settings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Add New User</h3>
+                <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="userName">Full Name</label>
+                        <input type="text" id="userName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">Email Address</label>
+                        <input type="email" id="userEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPhone">Phone Number</label>
+                        <input type="tel" id="userPhone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userInterest">Interest</label>
+                        <select id="userInterest" class="form-control" required>
+                            <option value="">Select an option</option>
+                            <option value="Beginner Classes">Beginner Classes</option>
+                            <option value="Intermediate Classes">Intermediate Classes</option>
+                            <option value="Advanced Classes">Advanced Classes</option>
+                            <option value="Private Lessons">Private Lessons</option>
+                            <option value="Workshops">Workshops</option>
+                            <option value="Just Exploring">Just Exploring</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="userStatus" checked> Active
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('userModal')">Cancel</button>
+                    <button type="submit" class="btn">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div class="modal-overlay" id="classModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="classModalTitle">Add New Class</h3>
+                <button class="modal-close" onclick="closeModal('classModal')">&times;</button>
+            </div>
+            <form id="classForm">
+                <input type="hidden" id="classId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="className">Class Name</label>
+                        <input type="text" id="className" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classLevel">Level</label>
+                        <select id="classLevel" class="form-control" required>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="All Levels">All Levels</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classDuration">Duration</label>
+                        <input type="text" id="classDuration" class="form-control" placeholder="e.g., 60 minutes" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classImage">Image URL</label>
+                        <input type="text" id="classImage" class="form-control" placeholder="https://example.com/image.jpg">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="classDescription">Description</label>
+                    <textarea id="classDescription" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="classStatus" checked> Active
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('classModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal-overlay" id="scheduleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="scheduleModalTitle">Add Schedule</h3>
+                <button class="modal-close" onclick="closeModal('scheduleModal')">&times;</button>
+            </div>
+            <form id="scheduleForm">
+                <input type="hidden" id="scheduleId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="scheduleClass">Class</label>
+                        <select id="scheduleClass" class="form-control" required>
+                            <!-- Classes will be populated here -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="scheduleDays">Days</label>
+                        <input type="text" id="scheduleDays" class="form-control" placeholder="e.g., Monday, Wednesday" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="scheduleTime">Time</label>
+                        <input type="text" id="scheduleTime" class="form-control" placeholder="e.g., 6:00 PM - 7:00 PM" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('scheduleModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Schedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div class="modal-overlay" id="pricingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="pricingModalTitle">Add Pricing Plan</h3>
+                <button class="modal-close" onclick="closeModal('pricingModal')">&times;</button>
+            </div>
+            <form id="pricingForm">
+                <input type="hidden" id="pricingId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="pricingName">Plan Name</label>
+                        <input type="text" id="pricingName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pricingPrice">Price</label>
+                        <input type="text" id="pricingPrice" class="form-control" placeholder="e.g., €50" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pricingFeatures">Features (comma separated)</label>
+                    <textarea id="pricingFeatures" class="form-control" placeholder="e.g., 4 classes per month, Access to all beginner classes, Personal progress tracking" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="pricingPopular"> Mark as Popular
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="pricingStatus" checked> Active
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('pricingModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div class="modal-overlay" id="galleryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="galleryModalTitle">Add Gallery Image</h3>
+                <button class="modal-close" onclick="closeModal('galleryModal')">&times;</button>
+            </div>
+            <form id="galleryForm">
+                <input type="hidden" id="galleryId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="galleryImage">Image URL</label>
+                        <input type="text" id="galleryImage" class="form-control" placeholder="https://example.com/image.jpg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryTitle">Image Title</label>
+                        <input type="text" id="galleryTitle" class="form-control" placeholder="Enter a descriptive title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryAlt">Alt Text</label>
+                        <input type="text" id="galleryAlt" class="form-control" placeholder="Description of image" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gallerySection">Section</label>
+                        <select id="gallerySection" class="form-control" required>
+                            <option value="social">Social Gallery</option> 
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('galleryModal')">Cancel</button>
+                    <button type="submit" class="btn">Add Image</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Testimonial Modal -->
+    <div class="modal-overlay" id="testimonialModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="testimonialModalTitle">Add Testimonial</h3>
+                <button class="modal-close" onclick="closeModal('testimonialModal')">&times;</button>
+            </div>
+            <form id="testimonialForm">
+                <input type="hidden" id="testimonialId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="testimonialStudent">Student Name</label>
+                        <input type="text" id="testimonialStudent" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="testimonialRating">Rating</label>
+                        <select id="testimonialRating" class="form-control" required>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="2">2 Stars</option>
+                            <option value="1">1 Star</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="testimonialText">Testimonial</label>
+                    <textarea id="testimonialText" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="testimonialStatus" checked> Active
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('testimonialModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Testimonial</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal-overlay" id="notificationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="notificationModalTitle">Add Notification</h3>
+                <button class="modal-close" onclick="closeModal('notificationModal')">&times;</button>
+            </div>
+            <form id="notificationForm">
+                <input type="hidden" id="notificationId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="notificationTitle">Title</label>
+                        <input type="text" id="notificationTitle" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="notificationDuration">Duration</label>
+                        <select id="notificationDuration" class="form-control" required>
+                            <option value="permanent">Permanent</option>
+                            <option value="7 days">7 Days</option>
+                            <option value="30 days">30 Days</option>
+                            <option value="90 days">90 Days</option>
+                            <option value="custom">Custom Date</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="customDateGroup" style="display: none;">
+                        <label for="notificationCustomDate">Custom End Date</label>
+                        <input type="date" id="notificationCustomDate" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="notificationMessage">Message</label>
+                    <textarea id="notificationMessage" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="notificationActive" checked> Active
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('notificationModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Notification</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Authentication system
+        const ADMIN_PASSWORD = "ducatii22";
+        const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
+        let inactivityTimer;
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+        });
+
+        mobileOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+        });
+
+        // Close mobile menu when clicking on menu items
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    mobileOverlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Check if user is already authenticated
+        function checkAuthentication() {
+            const isAuthenticated = localStorage.getItem('adminAuthenticated');
+            if (isAuthenticated === 'true') {
+                showAdminPanel();
+            } else {
+                showAuthModal();
+            }
+        }
+
+        // Show authentication modal
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        // Show admin panel
+        function showAdminPanel() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'flex';
+            initializeData();
+            loadDashboard();
+            loadSettings();
+            resetInactivityTimer();
+        }
+
+        // Handle authentication
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('authError');
+            
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('adminAuthenticated', 'true');
+                showAdminPanel();
+            } else {
+                errorElement.style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('adminAuthenticated');
+            document.getElementById('authForm').reset();
+            document.getElementById('authError').style.display = 'none';
+            clearTimeout(inactivityTimer);
+            showAuthModal();
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+                mobileOverlay.classList.remove('active');
+            }
+        }
+
+        // Auto logout after inactivity
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(logout, SESSION_TIMEOUT);
+        }
+
+        // Event listeners for user activity
+        function setupActivityListeners() {
+            const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+            events.forEach(event => {
+                document.addEventListener(event, resetInactivityTimer, true);
+            });
+        }
+
+        // Initialize default data
+        function initializeData() {
+            if (!localStorage.getItem('users')) {
+                localStorage.setItem('users', JSON.stringify([]));
+            }
+
+            if (!localStorage.getItem('classes')) {
+                const defaultClasses = [
+                    {
+                        id: 1,
+                        name: "Beginner Bollywood",
+                        level: "Beginner",
+                        duration: "60 minutes",
+                        description: "Perfect for those new to Bollywood dance. Learn basic steps and simple choreography in a fun, supportive environment.",
+                        image: "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        status: "Active"
+                    }
+                ];
+                localStorage.setItem('classes', JSON.stringify(defaultClasses));
+            }
+
+            if (!localStorage.getItem('schedule')) {
+                const defaultSchedule = [
+                    {
+                        id: 1,
+                        className: "Beginner Bollywood",
+                        days: "Monday, Wednesday",
+                        time: "6:00 PM - 7:00 PM"
+                    }
+                ];
+                localStorage.setItem('schedule', JSON.stringify(defaultSchedule));
+            }
+
+            if (!localStorage.getItem('pricing')) {
+                const defaultPricing = [
+                    {
+                        id: 1,
+                        name: "Single Class",
+                        price: "€15",
+                        features: "One-time class, Perfect for beginners, No commitment",
+                        popular: false,
+                        status: "Active"
+                    }
+                ];
+                localStorage.setItem('pricing', JSON.stringify(defaultPricing));
+            }
+
+            if (!localStorage.getItem('gallery')) {
+                const defaultGallery = [
+                    {
+                        id: 1,
+                        image: "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        title: "Bollyfit Dance Class",
+                        alt: "Bollyfit dance class in action",
+                        section: "hero"
+                    },
+                    {
+                        id: 2,
+                        image: "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        title: "Bollywood Performance",
+                        alt: "Bollywood dance performance",
+                        section: "about"
+                    },
+                    {
+                        id: 3,
+                        image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        title: "Advanced Choreography",
+                        alt: "Advanced dance choreography",
+                        section: "classes"
+                    }
+                ];
+                localStorage.setItem('gallery', JSON.stringify(defaultGallery));
+            }
+
+            if (!localStorage.getItem('testimonials')) {
+                const defaultTestimonials = [
+                    {
+                        id: 1,
+                        student: "Sarah Johnson",
+                        testimonial: "I've been taking classes with Nikita for 6 months and I've never felt more confident! The classes are fun, energetic, and welcoming for all levels.",
+                        rating: 5,
+                        status: "Active"
+                    }
+                ];
+                localStorage.setItem('testimonials', JSON.stringify(defaultTestimonials));
+            }
+
+            if (!localStorage.getItem('notifications')) {
+                const defaultNotifications = [
+                    {
+                        id: 1,
+                        title: "Welcome to Bollyfit Antwerp!",
+                        message: "We're excited to have you join our dance community. Check out our class schedule to get started.",
+                        date: new Date().toISOString(),
+                        read: false,
+                        active: true,
+                        duration: "permanent"
+                    },
+                    {
+                        id: 2,
+                        title: "New Beginner Classes Starting Soon",
+                        message: "We're launching new beginner classes next month. Register now to secure your spot!",
+                        date: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                        read: false,
+                        active: true,
+                        duration: "30 days"
+                    }
+                ];
+                localStorage.setItem('notifications', JSON.stringify(defaultNotifications));
+            }
+
+            if (!localStorage.getItem('settings')) {
+                const defaultSettings = {
+                    studioName: "Bollyfit Antwerp",
+                    instructorName: "Nikita Mittal",
+                    phone: "+0467693968",
+                    email: "bollyfitantwerp@gmail.com",
+                    address: "Antwerp, Belgium",
+                    hours: "Monday - Friday: 9am - 9pm\nSaturday: 10am - 4pm",
+                    aboutText: "Bollyfit Antwerp brings the vibrant energy of Bollywood dance to Belgium. Founded by Nikita Mittal, our studio offers professional dance instruction that combines traditional Indian dance forms with contemporary fitness techniques."
+                };
+                localStorage.setItem('settings', JSON.stringify(defaultSettings));
+            }
+
+            if (!localStorage.getItem('students')) {
+                localStorage.setItem('students', JSON.stringify([]));
+            }
+
+            if (!localStorage.getItem('activities')) {
+                localStorage.setItem('activities', JSON.stringify([]));
+            }
+        }
+
+        // Navigation
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const sectionId = this.getAttribute('data-section');
+                if (!sectionId) return;
+                
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(sectionId).classList.add('active');
+                
+                loadSectionData(sectionId);
+            });
+        });
+
+        // Load section data
+        function loadSectionData(section) {
+            switch(section) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'classes':
+                    loadClasses();
+                    break;
+                case 'schedule':
+                    loadSchedule();
+                    break;
+                case 'pricing':
+                    loadPricing();
+                    break;
+                case 'gallery':
+                    loadGallery();
+                    break;
+                case 'testimonials':
+                    loadTestimonials();
+                    break;
+                case 'notifications':
+                    loadNotifications();
+                    break;
+            }
+        }
+
+        // Dashboard functions
+        function loadDashboard() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const activities = JSON.parse(localStorage.getItem('activities') || '[]');
+            const pricing = JSON.parse(localStorage.getItem('pricing') || '[]');
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            
+            document.getElementById('totalStudents').textContent = users.length;
+            document.getElementById('totalClasses').textContent = classes.filter(c => c.status === 'Active').length;
+            document.getElementById('totalBookings').textContent = activities.filter(a => a.status === 'Pending').length;
+            document.getElementById('totalNotifications').textContent = notifications.filter(n => n.active).length;
+            
+            // Calculate actual income based on user interests and pricing plans
+            const monthlyIncome = calculateMonthlyIncome(users, pricing);
+            document.getElementById('totalIncome').textContent = `€${monthlyIncome}`;
+            
+            const activitiesTable = document.querySelector('#activitiesTable tbody');
+            activitiesTable.innerHTML = '';
+            
+            activities.slice(-5).reverse().forEach(activity => {
+                const row = `
+                    <tr>
+                        <td>${activity.studentName}</td>
+                        <td>${activity.description}</td>
+                        <td>${activity.date}</td>
+                        <td><span class="status-btn action-btn">${activity.status}</span></td>
+                    </tr>
+                `;
+                activitiesTable.innerHTML += row;
+            });
+        }
+
+        // Calculate monthly income based on user interests and pricing
+        function calculateMonthlyIncome(users, pricing) {
+            if (users.length === 0) return 0;
+            
+            let totalIncome = 0;
+            
+            // Define pricing based on interests
+            const interestPricing = {
+                'Beginner Classes': 60,
+                'Intermediate Classes': 70,
+                'Advanced Classes': 80,
+                'Private Lessons': 100,
+                'Workshops': 50,
+                'Just Exploring': 0 // No income for just exploring
+            };
+            
+            users.forEach(user => {
+                const price = interestPricing[user.interest] || 50; // Default to €50 if interest not found
+                totalIncome += price;
+            });
+            
+            return totalIncome;
+        }
+
+        // User management
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const usersTable = document.querySelector('#usersTable tbody');
+            usersTable.innerHTML = '';
+            
+            if (users.length === 0) {
+                usersTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-users" style="font-size: 2rem; color: #ccc; margin-bottom: 10px;"></i>
+                            <p>No users registered yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            users.forEach(user => {
+                const row = `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone}</td>
+                        <td>${user.interest}</td>
+                        <td>${new Date(user.registrationDate).toLocaleDateString()}</td>
+                        <td><span class="status-btn action-btn">${user.status}</span></td>
+                        <td class="action-btns">
+                            <button class="edit-btn action-btn" onclick="editUser(${user.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deleteUser(${user.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                usersTable.innerHTML += row;
+            });
+        }
+
+        function openUserModal(editId = null) {
+            const modal = document.getElementById('userModal');
+            const form = document.getElementById('userForm');
+            const title = document.getElementById('userModalTitle');
+            
+            if (editId) {
+                title.textContent = 'Edit User';
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.id === editId);
+                
+                if (user) {
+                    document.getElementById('userId').value = user.id;
+                    document.getElementById('userName').value = user.name;
+                    document.getElementById('userEmail').value = user.email;
+                    document.getElementById('userPhone').value = user.phone;
+                    document.getElementById('userInterest').value = user.interest;
+                    document.getElementById('userStatus').checked = user.status === 'Active';
+                }
+            } else {
+                title.textContent = 'Add New User';
+                form.reset();
+                document.getElementById('userId').value = '';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            const userData = {
+                id: userId ? parseInt(userId) : Date.now(),
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                interest: document.getElementById('userInterest').value,
+                status: document.getElementById('userStatus').checked ? 'Active' : 'Inactive',
+                registrationDate: userId ? users.find(u => u.id === parseInt(userId)).registrationDate : new Date().toISOString()
+            };
+            
+            if (userId) {
+                const index = users.findIndex(u => u.id === parseInt(userId));
+                if (index !== -1) {
+                    users[index] = userData;
+                }
+            } else {
+                users.push(userData);
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            closeModal('userModal');
+            loadUsers();
+            loadDashboard();
+        });
+
+        function editUser(id) {
+            openUserModal(id);
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const updatedUsers = users.filter(u => u.id !== id);
+                localStorage.setItem('users', JSON.stringify(updatedUsers));
+                loadUsers();
+                loadDashboard();
+            }
+        }
+
+        // Class management
+        function loadClasses() {
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            const classesTable = document.querySelector('#classesTable tbody');
+            classesTable.innerHTML = '';
+            
+            classes.forEach(classItem => {
+                const row = `
+                    <tr>
+                        <td>${classItem.name}</td>
+                        <td>${classItem.level}</td>
+                        <td>${classItem.duration}</td>
+                        <td><span class="status-btn action-btn">${classItem.status}</span></td>
+                        <td class="action-btns">
+                            <button class="edit-btn action-btn" onclick="editClass(${classItem.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deleteClass(${classItem.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                classesTable.innerHTML += row;
+            });
+        }
+
+        function openClassModal(editId = null) {
+            const modal = document.getElementById('classModal');
+            const form = document.getElementById('classForm');
+            const title = document.getElementById('classModalTitle');
+            
+            if (editId) {
+                title.textContent = 'Edit Class';
+                const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                const classItem = classes.find(c => c.id === editId);
+                
+                if (classItem) {
+                    document.getElementById('classId').value = classItem.id;
+                    document.getElementById('className').value = classItem.name;
+                    document.getElementById('classLevel').value = classItem.level;
+                    document.getElementById('classDuration').value = classItem.duration;
+                    document.getElementById('classImage').value = classItem.image;
+                    document.getElementById('classDescription').value = classItem.description;
+                    document.getElementById('classStatus').checked = classItem.status === 'Active';
+                }
+            } else {
+                title.textContent = 'Add New Class';
+                form.reset();
+                document.getElementById('classId').value = '';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('classForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const classId = document.getElementById('classId').value;
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            
+            const classData = {
+                id: classId ? parseInt(classId) : Date.now(),
+                name: document.getElementById('className').value,
+                level: document.getElementById('classLevel').value,
+                duration: document.getElementById('classDuration').value,
+                image: document.getElementById('classImage').value,
+                description: document.getElementById('classDescription').value,
+                status: document.getElementById('classStatus').checked ? 'Active' : 'Inactive'
+            };
+            
+            if (classId) {
+                const index = classes.findIndex(c => c.id === parseInt(classId));
+                if (index !== -1) {
+                    classes[index] = classData;
+                }
+            } else {
+                classes.push(classData);
+            }
+            
+            localStorage.setItem('classes', JSON.stringify(classes));
+            closeModal('classModal');
+            loadClasses();
+            triggerWebsiteUpdate();
+        });
+
+        function editClass(id) {
+            openClassModal(id);
+        }
+
+        function deleteClass(id) {
+            if (confirm('Are you sure you want to delete this class?')) {
+                const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+                const updatedClasses = classes.filter(c => c.id !== id);
+                localStorage.setItem('classes', JSON.stringify(updatedClasses));
+                loadClasses();
+                triggerWebsiteUpdate();
+            }
+        }
+
+        // Schedule management
+        function loadSchedule() {
+            const schedule = JSON.parse(localStorage.getItem('schedule') || '[]');
+            const scheduleTable = document.querySelector('#scheduleTable tbody');
+            scheduleTable.innerHTML = '';
+            
+            const classSelect = document.getElementById('scheduleClass');
+            const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+            classSelect.innerHTML = '';
+            classes.forEach(classItem => {
+                const option = document.createElement('option');
+                option.value = classItem.name;
+                option.textContent = classItem.name;
+                classSelect.appendChild(option);
+            });
+            
+            schedule.forEach(scheduleItem => {
+                const row = `
+                    <tr>
+                        <td>${scheduleItem.className}</td>
+                        <td>${scheduleItem.days}</td>
+                        <td>${scheduleItem.time}</td>
+                        <td class="action-btns">
+                            <button class="edit-btn action-btn" onclick="editSchedule(${scheduleItem.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deleteSchedule(${scheduleItem.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                scheduleTable.innerHTML += row;
+            });
+        }
+
+        function openScheduleModal(editId = null) {
+            const modal = document.getElementById('scheduleModal');
+            const form = document.getElementById('scheduleForm');
+            const title = document.getElementById('scheduleModalTitle');
+            
+            if (editId) {
+                title.textContent = 'Edit Schedule';
+                const schedule = JSON.parse(localStorage.getItem('schedule') || '[]');
+                const scheduleItem = schedule.find(s => s.id === editId);
+                
+                if (scheduleItem) {
+                    document.getElementById('scheduleId').value = scheduleItem.id;
+                    document.getElementById('scheduleClass').value = scheduleItem.className;
+                    document.getElementById('scheduleDays').value = scheduleItem.days;
+                    document.getElementById('scheduleTime').value = scheduleItem.time;
+                }
+            } else {
+                title.textContent = 'Add Schedule';
+                form.reset();
+                document.getElementById('scheduleId').value = '';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const scheduleId = document.getElementById('scheduleId').value;
+            const schedule = JSON.parse(localStorage.getItem('schedule') || '[]');
+            
+            const scheduleData = {
+                id: scheduleId ? parseInt(scheduleId) : Date.now(),
+                className: document.getElementById('scheduleClass').value,
+                days: document.getElementById('scheduleDays').value,
+                time: document.getElementById('scheduleTime').value
+            };
+            
+            if (scheduleId) {
+                const index = schedule.findIndex(s => s.id === parseInt(scheduleId));
+                if (index !== -1) {
+                    schedule[index] = scheduleData;
+                }
+            } else {
+                schedule.push(scheduleData);
+            }
+            
+            localStorage.setItem('schedule', JSON.stringify(schedule));
+            closeModal('scheduleModal');
+            loadSchedule();
+            triggerWebsiteUpdate();
+        });
+
+        function editSchedule(id) {
+            openScheduleModal(id);
+        }
+
+        function deleteSchedule(id) {
+            if (confirm('Are you sure you want to delete this schedule?')) {
+                const schedule = JSON.parse(localStorage.getItem('schedule') || '[]');
+                const updatedSchedule = schedule.filter(s => s.id !== id);
+                localStorage.setItem('schedule', JSON.stringify(updatedSchedule));
+                loadSchedule();
+                triggerWebsiteUpdate();
+            }
+        }
+
+        // Pricing management
+        function loadPricing() {
+            const pricing = JSON.parse(localStorage.getItem('pricing') || '[]');
+            const pricingTable = document.querySelector('#pricingTable tbody');
+            pricingTable.innerHTML = '';
+            
+            pricing.forEach(priceItem => {
+                const row = `
+                    <tr>
+                        <td>${priceItem.name}</td>
+                        <td>${priceItem.price}</td>
+                        <td>${priceItem.popular ? 'Yes' : 'No'}</td>
+                        <td><span class="status-btn action-btn">${priceItem.status}</span></td>
+                        <td class="action-btns">
+                            <button class="edit-btn action-btn" onclick="editPricing(${priceItem.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deletePricing(${priceItem.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                pricingTable.innerHTML += row;
+            });
+        }
+
+        function openPricingModal(editId = null) {
+            const modal = document.getElementById('pricingModal');
+            const form = document.getElementById('pricingForm');
+            const title = document.getElementById('pricingModalTitle');
+            
+            if (editId) {
+                title.textContent = 'Edit Pricing Plan';
+                const pricing = JSON.parse(localStorage.getItem('pricing') || '[]');
+                const priceItem = pricing.find(p => p.id === editId);
+                
+                if (priceItem) {
+                    document.getElementById('pricingId').value = priceItem.id;
+                    document.getElementById('pricingName').value = priceItem.name;
+                    document.getElementById('pricingPrice').value = priceItem.price;
+                    document.getElementById('pricingFeatures').value = priceItem.features;
+                    document.getElementById('pricingPopular').checked = priceItem.popular;
+                    document.getElementById('pricingStatus').checked = priceItem.status === 'Active';
+                }
+            } else {
+                title.textContent = 'Add Pricing Plan';
+                form.reset();
+                document.getElementById('pricingId').value = '';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('pricingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const pricingId = document.getElementById('pricingId').value;
+            const pricing = JSON.parse(localStorage.getItem('pricing') || '[]');
+            
+            const pricingData = {
+                id: pricingId ? parseInt(pricingId) : Date.now(),
+                name: document.getElementById('pricingName').value,
+                price: document.getElementById('pricingPrice').value,
+                features: document.getElementById('pricingFeatures').value,
+                popular: document.getElementById('pricingPopular').checked,
+                status: document.getElementById('pricingStatus').checked ? 'Active' : 'Inactive'
+            };
+            
+            if (pricingId) {
+                const index = pricing.findIndex(p => p.id === parseInt(pricingId));
+                if (index !== -1) {
+                    pricing[index] = pricingData;
+                }
+            } else {
+                pricing.push(pricingData);
+            }
+            
+            localStorage.setItem('pricing', JSON.stringify(pricing));
+            closeModal('pricingModal');
+            loadPricing();
+            triggerWebsiteUpdate();
+        });
+
+        function editPricing(id) {
+            openPricingModal(id);
+        }
+
+        function deletePricing(id) {
+            if (confirm('Are you sure you want to delete this pricing plan?')) {
+                const pricing = JSON.parse(localStorage.getItem('pricing') || '[]');
+                const updatedPricing = pricing.filter(p => p.id !== id);
+                localStorage.setItem('pricing', JSON.stringify(updatedPricing));
+                loadPricing();
+                triggerWebsiteUpdate();
+            }
+        }
+
+        // Gallery management
+        function loadGallery() {
+            const gallery = JSON.parse(localStorage.getItem('gallery') || '[]');
+            const galleryGrid = document.getElementById('adminGalleryGrid');
+            galleryGrid.innerHTML = '';
+            
+            if (gallery.length === 0) {
+                galleryGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <i class="fas fa-images" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                        <h3>No images yet</h3>
+                        <p>Add your first image to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            gallery.forEach(image => {
+                const sectionNames = {
+                    'hero': 'Hero Section',
+                    'about': 'About Section',
+                    'classes': 'Classes Section',
+                    'social': 'Social Gallery',
+                    'events': 'Events',
+                    'general': 'General'
+                };
+                
+                const galleryItem = `
+                    <div class="gallery-item" data-section="${image.section}">
+                        <div class="gallery-section-badge">${sectionNames[image.section]}</div>
+                        <img src="${image.image}" alt="${image.alt}">
+                        <div class="gallery-title">${image.title}</div>
+                        <div class="gallery-alt">${image.alt}</div>
+                        <div style="margin-top: 10px;">
+                            <button class="edit-btn action-btn" onclick="editGalleryImage(${image.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deleteGalleryImage(${image.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+                galleryGrid.innerHTML += galleryItem;
+            });
+            
+            // Set up gallery filters
+            setupGalleryFilters();
+        }
+
+        function setupGalleryFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const section = this.getAttribute('data-section');
+                    
+                    // Filter gallery items
+                    galleryItems.forEach(item => {
+                        if (section === 'all') {
+                            item.style.display = 'block';
+                        } else {
+                            const itemSection = item.getAttribute('data-section');
+                            if (itemSection === section) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        function openGalleryModal(editId = null) {
+            const modal = document.getElementById('galleryModal');
+            const form = document.getElementById('galleryForm');
+            const title = document.getElementById('galleryModalTitle');
+            
+            if (editId) {
+                title.textContent = 'Edit Gallery Image';
+                const gallery = JSON.parse(localStorage.getItem('gallery') || '[]');
+                const image = gallery.find(g => g.id === editId);
+                
+                if (image) {
+                    document.getElementById('galleryId').value = image.id;
+                    document.getElementById('galleryImage').value = image.image;
+                    document.getElementById('galleryTitle').value = image.title;
+                    document.getElementById('galleryAlt').value = image.alt;
+                    document.getElementById('gallerySection').value = image.section;
+                }
+            } else {
+                title.textContent = 'Add Gallery Image';
+                form.reset();
+                document.getElementById('galleryId').value = '';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('galleryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const galleryId = document.getElementById('galleryId').value;
+            const gallery = JSON.parse(localStorage.getItem('gallery') || '[]');
+            
+            const galleryData = {
+                id: galleryId ? parseInt(galleryId) : Date.now(),
+                image: document.getElementById('galleryImage').value,
+                title: document.getElementById('galleryTitle').value,
+                alt: document.getElementById('galleryAlt').value,
+                section: document.getElementById('gallerySection').value
+            };
+            
+            if (galleryId) {
+                const index = gallery.findIndex(g => g.id === parseInt(galleryId));
+                if (index !== -1) {
+                    gallery[index] = galleryData;
+                }
+            } else {
+                gallery.push(galleryData);
+            }
+            
+            localStorage.setItem('gallery', JSON.stringify(gallery));
+            closeModal('galleryModal');
+            loadGallery();
+            triggerWebsiteUpdate();
+        });
+
+        function editGalleryImage(id) {
+            openGalleryModal(id);
+        }
+
+        function deleteGalleryImage(id) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                const gallery = JSON.parse(localStorage.getItem('gallery') || '[]');
+                const updatedGallery = gallery.filter(g => g.id !== id);
+                localStorage.setItem('gallery', JSON.stringify(updatedGallery));
+                loadGallery();
+                triggerWebsiteUpdate();
+            }
+        }
+
+        // Testimonials management
+        function loadTestimonials() {
+            const testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+            const testimonialsTable = document.querySelector('#testimonialsTable tbody');
+            testimonialsTable.innerHTML = '';
+            
+            if (testimonials.length === 0) {
+                testimonialsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-star" style="font-size: 2rem; color: #ccc; margin-bottom: 10px;"></i>
+                            <p>No testimonials yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            testimonials.forEach(testimonial => {
+                const row = `
+                    <tr>
+                        <td>${testimonial.student}</td>
+                        <td>${testimonial.testimonial.substring(0, 50)}...</td>
+                        <td>${'★'.repeat(testimonial.rating)}</td>
+                        <td><span class="status-btn action-btn">${testimonial.status}</span></td>
+                        <td class="action-btns">
+                            <button class="edit-btn action-btn" onclick="editTestimonial(${testimonial.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deleteTestimonial(${testimonial.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                testimonialsTable.innerHTML += row;
+            });
+        }
+
+        function openTestimonialModal(editId = null) {
+            const modal = document.getElementById('testimonialModal');
+            const form = document.getElementById('testimonialForm');
+            const title = document.getElementById('testimonialModalTitle');
+            
+            if (editId) {
+                title.textContent = 'Edit Testimonial';
+                const testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+                const testimonial = testimonials.find(t => t.id === editId);
+                
+                if (testimonial) {
+                    document.getElementById('testimonialId').value = testimonial.id;
+                    document.getElementById('testimonialStudent').value = testimonial.student;
+                    document.getElementById('testimonialRating').value = testimonial.rating;
+                    document.getElementById('testimonialText').value = testimonial.testimonial;
+                    document.getElementById('testimonialStatus').checked = testimonial.status === 'Active';
+                }
+            } else {
+                title.textContent = 'Add Testimonial';
+                form.reset();
+                document.getElementById('testimonialId').value = '';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('testimonialForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const testimonialId = document.getElementById('testimonialId').value;
+            const testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+            
+            const testimonialData = {
+                id: testimonialId ? parseInt(testimonialId) : Date.now(),
+                student: document.getElementById('testimonialStudent').value,
+                testimonial: document.getElementById('testimonialText').value,
+                rating: parseInt(document.getElementById('testimonialRating').value),
+                status: document.getElementById('testimonialStatus').checked ? 'Active' : 'Inactive'
+            };
+            
+            if (testimonialId) {
+                const index = testimonials.findIndex(t => t.id === parseInt(testimonialId));
+                if (index !== -1) {
+                    testimonials[index] = testimonialData;
+                }
+            } else {
+                testimonials.push(testimonialData);
+            }
+            
+            localStorage.setItem('testimonials', JSON.stringify(testimonials));
+            closeModal('testimonialModal');
+            loadTestimonials();
+            triggerWebsiteUpdate();
+        });
+
+        function editTestimonial(id) {
+            openTestimonialModal(id);
+        }
+
+        function deleteTestimonial(id) {
+            if (confirm('Are you sure you want to delete this testimonial?')) {
+                const testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+                const updatedTestimonials = testimonials.filter(t => t.id !== id);
+                localStorage.setItem('testimonials', JSON.stringify(updatedTestimonials));
+                loadTestimonials();
+                triggerWebsiteUpdate();
+            }
+        }
+
+        // Notifications management
+        function loadNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            const notificationsTable = document.querySelector('#notificationsTable tbody');
+            notificationsTable.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-bell" style="font-size: 2rem; color: #ccc; margin-bottom: 10px;"></i>
+                            <p>No notifications yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            notifications.forEach(notification => {
+                const row = `
+                    <tr>
+                        <td>${notification.title}</td>
+                        <td>${notification.message.substring(0, 50)}...</td>
+                        <td>${notification.duration}</td>
+                        <td><span class="status-btn action-btn">${notification.active ? 'Active' : 'Inactive'}</span></td>
+                        <td class="action-btns">
+                            <button class="edit-btn action-btn" onclick="editNotification(${notification.id})">Edit</button>
+                            <button class="delete-btn action-btn" onclick="deleteNotification(${notification.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                notificationsTable.innerHTML += row;
+            });
+            
+            // Update notification badge in sidebar
+            const activeNotifications = notifications.filter(n => n.active);
+            document.getElementById('sidebarNotificationBadge').textContent = activeNotifications.length;
+        }
+
+        function openNotificationModal(editId = null) {
+            const modal = document.getElementById('notificationModal');
+            const form = document.getElementById('notificationForm');
+            const title = document.getElementById('notificationModalTitle');
+            
+            // Show/hide custom date field based on duration selection
+            document.getElementById('notificationDuration').addEventListener('change', function() {
+                const customDateGroup = document.getElementById('customDateGroup');
+                if (this.value === 'custom') {
+                    customDateGroup.style.display = 'block';
+                } else {
+                    customDateGroup.style.display = 'none';
+                }
+            });
+            
+            if (editId) {
+                title.textContent = 'Edit Notification';
+                const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                const notification = notifications.find(n => n.id === editId);
+                
+                if (notification) {
+                    document.getElementById('notificationId').value = notification.id;
+                    document.getElementById('notificationTitle').value = notification.title;
+                    document.getElementById('notificationMessage').value = notification.message;
+                    document.getElementById('notificationDuration').value = notification.duration;
+                    document.getElementById('notificationActive').checked = notification.active;
+                    
+                    if (notification.duration === 'custom') {
+                        document.getElementById('customDateGroup').style.display = 'block';
+                        document.getElementById('notificationCustomDate').value = notification.customDate || '';
+                    }
+                }
+            } else {
+                title.textContent = 'Add Notification';
+                form.reset();
+                document.getElementById('notificationId').value = '';
+                document.getElementById('customDateGroup').style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        document.getElementById('notificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const notificationId = document.getElementById('notificationId').value;
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            
+            const notificationData = {
+                id: notificationId ? parseInt(notificationId) : Date.now(),
+                title: document.getElementById('notificationTitle').value,
+                message: document.getElementById('notificationMessage').value,
+                date: new Date().toISOString(),
+                read: false,
+                active: document.getElementById('notificationActive').checked,
+                duration: document.getElementById('notificationDuration').value
+            };
+            
+            // Add custom date if applicable
+            if (notificationData.duration === 'custom') {
+                notificationData.customDate = document.getElementById('notificationCustomDate').value;
+            }
+            
+            if (notificationId) {
+                const index = notifications.findIndex(n => n.id === parseInt(notificationId));
+                if (index !== -1) {
+                    notifications[index] = notificationData;
+                }
+            } else {
+                notifications.push(notificationData);
+            }
+            
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            closeModal('notificationModal');
+            loadNotifications();
+            loadDashboard();
+            triggerWebsiteUpdate();
+        });
+
+        function editNotification(id) {
+            openNotificationModal(id);
+        }
+
+        function deleteNotification(id) {
+            if (confirm('Are you sure you want to delete this notification?')) {
+                const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+                const updatedNotifications = notifications.filter(n => n.id !== id);
+                localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+                loadNotifications();
+                loadDashboard();
+                triggerWebsiteUpdate();
+            }
+        }
+
+        // Settings management
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const settings = {
+                studioName: document.getElementById('studioName').value,
+                instructorName: document.getElementById('instructorName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                hours: document.getElementById('hours').value,
+                aboutText: document.getElementById('aboutText').value
+            };
+            
+            localStorage.setItem('settings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+            triggerWebsiteUpdate();
+        });
+
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default?')) {
+                localStorage.removeItem('settings');
+                loadSettings();
+                alert('Settings reset to default values.');
+            }
+        }
+
+        // Load settings
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+            
+            document.getElementById('studioName').value = settings.studioName || "Bollyfit Antwerp";
+            document.getElementById('instructorName').value = settings.instructorName || "Nikita Mittal";
+            document.getElementById('phone').value = settings.phone || "+0467693968";
+            document.getElementById('email').value = settings.email || "bollyfitantwerp@gmail.com";
+            document.getElementById('address').value = settings.address || "Antwerp, Belgium";
+            document.getElementById('hours').value = settings.hours || "Monday - Friday: 9am - 9pm\nSaturday: 10am - 4pm";
+            document.getElementById('aboutText').value = settings.aboutText || "Bollyfit Antwerp brings the vibrant energy of Bollywood dance to Belgium. Founded by Nikita Mittal, our studio offers professional dance instruction that combines traditional Indian dance forms with contemporary fitness techniques.";
+        }
+
+        // Modal functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Trigger website update
+        function triggerWebsiteUpdate() {
+            localStorage.setItem('websiteNeedsRefresh', Date.now().toString());
+            localStorage.setItem('notificationsNeedRefresh', Date.now().toString());
+            alert('Website content updated! The changes will appear on the main website.');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            setupActivityListeners();
+        });
+    </script>
+</body>
+</html>

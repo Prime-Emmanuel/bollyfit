@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Gallery | Bollyfit Antwerp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #e63946;
+            --secondary: #f1faee;
+            --accent: #a8dadc;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --text: #333333;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: #f5f7fa;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: var(--transition);
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0;
+            color: var(--dark);
+        }
+
+        .logo span {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            position: relative;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        /* Mobile Menu */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            z-index: 1001;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu li {
+            margin: 15px 0;
+            width: 100%;
+            text-align: center;
+            list-style: none;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 12px 20px;
+            font-weight: 500;
+            border-radius: 5px;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .mobile-menu a:hover {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Gallery Hero */
+        .gallery-hero {
+            height: 70vh;
+            background: linear-gradient(rgba(29, 53, 87, 0.8), rgba(29, 53, 87, 0.7)), url('https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        .gallery-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gallery-hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        /* Gallery Navigation */
+        .gallery-nav {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+        }
+
+        .gallery-nav-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-nav-item {
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .gallery-nav-item.active {
+            color: white;
+        }
+
+        .gallery-nav-item.active::before {
+            left: 0;
+        }
+
+        .gallery-nav-item:hover:not(.active) {
+            background: var(--secondary);
+        }
+
+        /* Gallery Content */
+        .gallery-content {
+            padding: 80px 0;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        /* Gallery Cards */
+        .gallery-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-image {
+            position: relative;
+            overflow: hidden;
+            height: 300px;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .gallery-card:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gallery-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-info {
+            color: white;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .gallery-card:hover .card-info {
+            transform: translateY(0);
+        }
+
+        .card-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .card-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: var(--transition);
+        }
+
+        .gallery-card:hover .card-actions {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .card-footer {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .card-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .author-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Modal for full-size image */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 20px;
+        }
+
+        .modal-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 70px 0 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-col h3 {
+            color: white;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .footer-col p {
+            margin-bottom: 20px;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #ddd;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: var(--transition);
+            text-decoration: none;
+            color: white;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--dark);
+            transform: translateY(-5px);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(230, 57, 70, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .gallery-hero h1 {
+                font-size: 3rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                position: relative;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .mobile-menu {
+                display: flex;
+            }
+            
+            .gallery-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-nav-container {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-hero {
+                height: 60vh;
+            }
+            
+            .gallery-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .mobile-menu {
+                width: 100%;
+            }
+            
+            .card-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1>Bollyfit <span>Antwerp</span></h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#classes">Classes</a></li>
+                    <li><a href="index.html#schedule">Schedule</a></li>
+                    <li><a href="index.html#instructor">Instructor</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="gallery.html" style="color: var(--primary);">Gallery</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                    <li><a href="admin.html">Admin</a></li>
+                </ul>
+                <button class="hamburger">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+        <!-- Mobile Menu -->
+        <ul class="mobile-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#classes">Classes</a></li>
+            <li><a href="index.html#schedule">Schedule</a></li>
+            <li><a href="index.html#instructor">Instructor</a></li>
+            <li><a href="index.html#pricing">Pricing</a></li>
+            <li><a href="gallery.html" style="color: var(--primary);">Gallery</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="menu-overlay"></div>
+    </header>
+
+    <!-- Gallery Hero -->
+    <section class="gallery-hero">
+        <div class="container">
+            <div class="gallery-hero-content">
+                <h1>Visual Symphony</h1>
+                <p>Immerse yourself in a world of breathtaking imagery. Explore our curated collection of stunning visual moments captured through the lens of talented artists.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Navigation -->
+    <section class="gallery-nav">
+        <div class="container">
+            <div class="gallery-nav-container">
+                <div class="gallery-nav-item active" data-category="all">All Images</div>
+              
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Content -->
+    <section class="gallery-content">
+        <div class="container">
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery cards will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <button class="modal-close" id="modalClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-nav">
+            <button class="modal-nav-btn" id="prevBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="modal-nav-btn" id="nextBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="modal-content">
+            <img src="" alt="" id="modalImage">
+            <div class="modal-title" id="modalTitle"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h3>Bollyfit Antwerp</h3>
+                    <p>Bringing the joy of Bollywood dance to Antwerp with professional instruction and a welcoming community.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#classes">Classes</a></li>
+                        <li><a href="index.html#schedule">Schedule</a></li>
+                        <li><a href="index.html#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Classes</h3>
+                    <ul class="footer-links" id="footerClasses">
+                        <!-- Classes will be loaded dynamically -->
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Antwerp, Belgium</p>
+                    <p><i class="fas fa-phone"></i> +0467693968</p>
+                    <p><i class="fas fa-envelope"></i> bollyfitantwerp@gmail.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Bollyfit Antwerp. All Rights Reserved. | Designed with <i class="fas fa-heart" style="color: var(--primary);"></i> by Mboa Vision</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Gallery data array (will be populated from admin panel)
+        let galleryData = [];
+
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const menuOverlay = document.querySelector('.menu-overlay');
+
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            
+            // Change hamburger icon
+            const icon = hamburger.querySelector('i');
+            if (mobileMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        menuOverlay.addEventListener('click', function() {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Reset hamburger icon
+            const icon = hamburger.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        });
+
+        // Close mobile menu when clicking on a link
+        const mobileMenuItems = document.querySelectorAll('.mobile-menu a');
+        mobileMenuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                
+                // Reset hamburger icon
+                const icon = hamburger.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.querySelector('.back-to-top');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
+        });
+
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Gallery navigation
+        const galleryNavItems = document.querySelectorAll('.gallery-nav-item');
+        
+        galleryNavItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                galleryNavItems.forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Filter images based on selection
+                const category = this.getAttribute('data-category');
+                filterImages(category);
+            });
+        });
+
+        // Filter images function
+        function filterImages(category) {
+            const galleryGrid = document.getElementById('galleryGrid');
+            galleryGrid.innerHTML = '';
+            
+            if (category === 'all') {
+                renderGallery(galleryData);
+            } else {
+                const filteredData = galleryData.filter(item => item.category === category);
+                renderGallery(filteredData);
+            }
+        }
+
+        // Render gallery function
+        function renderGallery(data) {
+            const galleryGrid = document.getElementById('galleryGrid');
+            
+            if (data.length === 0) {
+                galleryGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                        <i class="fas fa-images" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+                        <h3>No images found</h3>
+                        <p>Try selecting a different category</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            data.forEach(item => {
+                const cardElement = `
+                    <div class="gallery-card" data-id="${item.id}" data-category="${item.category}">
+                        <div class="card-image">
+                            <img src="${item.image}" alt="${item.title}">
+                            <div class="card-overlay">
+                                <div class="card-info">
+                                    <h3>${item.title}</h3>
+                                    <p>${item.description}</p>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn" onclick="openModal(${item.id})">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-author">
+                                <div class="author-avatar">${item.author.charAt(0)}</div>
+                                <div class="author-name">${item.author}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                galleryGrid.innerHTML += cardElement;
+            });
+        }
+
+        // Modal functionality
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalClose = document.getElementById('modalClose');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        let currentImageIndex = 0;
+        let currentImages = [];
+        
+        function openModal(imageId) {
+            // Get all images in current view
+            const activeCategory = document.querySelector('.gallery-nav-item.active').getAttribute('data-category');
+            if (activeCategory === 'all') {
+                currentImages = [...galleryData];
+            } else {
+                currentImages = galleryData.filter(item => item.category === activeCategory);
+            }
+            
+            // Find the index of the clicked image
+            currentImageIndex = currentImages.findIndex(item => item.id === imageId);
+            
+            // Set the modal image and title
+            modalImage.src = currentImages[currentImageIndex].image;
+            modalImage.alt = currentImages[currentImageIndex].title;
+            modalTitle.textContent = currentImages[currentImageIndex].title;
+            
+            // Show the modal
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+            modalImage.src = currentImages[currentImageIndex].image;
+            modalImage.alt = currentImages[currentImageIndex].title;
+            modalTitle.textContent = currentImages[currentImageIndex].title;
+        }
+        
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
+            modalImage.src = currentImages[currentImageIndex].image;
+            modalImage.alt = currentImages[currentImageIndex].title;
+            modalTitle.textContent = currentImages[currentImageIndex].title;
+        }
+        
+        // Event listeners for modal
+        modalClose.addEventListener('click', closeModal);
+        nextBtn.addEventListener('click', showNextImage);
+        prevBtn.addEventListener('click', showPrevImage);
+        
+        // Close modal when clicking outside the image
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (modal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                } else if (e.key === 'ArrowRight') {
+                    showNextImage();
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevImage();
+                }
+            }
+        });
+
+        // Load gallery data from localStorage (admin panel integration)
+        function loadGalleryData() {
+            const adminGalleryData = localStorage.getItem('gallery');
+            if (adminGalleryData) {
+                const parsedData = JSON.parse(adminGalleryData);
+                if (parsedData.length > 0) {
+                    // Transform admin gallery data to match our format
+                    const transformedData = parsedData.map(item => ({
+                        id: item.id,
+                        title: item.title || item.alt, // Use title if available, fallback to alt
+                        description: item.alt,
+                        image: item.image,
+                        category: item.section,
+                        author: "Bollyfit Antwerp"
+                    }));
+                    
+                    // Replace gallery data with admin data
+                    galleryData.length = 0;
+                    galleryData.push(...transformedData);
+                    
+                    // Re-render the gallery
+                    const activeCategory = document.querySelector('.gallery-nav-item.active').getAttribute('data-category');
+                    filterImages(activeCategory);
+                }
+            }
+        }
+
+        // Initialize gallery
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load gallery data from admin panel
+            loadGalleryData();
+            
+            // Check for updates from admin panel every 2 seconds
+            setInterval(loadGalleryData, 2000);
+        });
+    </script>
+</body>
+</html>
